@@ -369,7 +369,9 @@ object ExerciseLibrary {
             )
         val handDown = ArmPose(-90, -90)
         val kneeDown = LegPose.Angles(-90, 0, 0)
-        val armReach = ArmPose(172, 172)
+        // -188° is the same direction as 172°, but blends from hands-down by lifting the arm forward
+        // instead of swinging it back over the head.
+        val armReach = ArmPose(-188, -188)
         val legReach = LegPose.Angles(4, 4, -4)
         val hold = "Hold. Belly lifted, hips square to the mat."
 
