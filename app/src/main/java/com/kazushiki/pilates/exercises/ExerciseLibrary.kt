@@ -54,6 +54,7 @@ object ExerciseLibrary {
     fun bridgePoses(
         feet: LegPose,
         nearLegAngles: Map<String, Number>? = null,
+        nearKneeBend: Double = 0.0,
         shoulder: Pt = Pt(150.0, lyingY),
     ): Map<String, FigurePose> {
         val spine: List<Triple<String, Double, Double>> = listOf(
@@ -71,9 +72,10 @@ object ExerciseLibrary {
             )
             val lift = nearLegAngles?.get(name)
             if (lift != null) {
-                // Single-leg: the near leg reaches long in line with the thigh; the far foot works.
+                // Single-leg: the near leg reaches up (knee bent by nearKneeBend); the far foot works.
                 val l = lift.toDouble()
-                pose = pose.copy(farLeg = feet, leg = LegPose.Angles(l, l, l))
+                val shin = l - nearKneeBend
+                pose = pose.copy(farLeg = feet, leg = LegPose.Angles(l, shin, shin))
             }
             poses[name] = pose
         }
@@ -900,7 +902,7 @@ object ExerciseLibrary {
         variations = listOf(
             ExerciseVariation(
                 id = "standard", title = "Standard", level = ExerciseLevel.INTERMEDIATE,
-                poses = bridgePoses(feet = feetOnWall, nearLegAngles = mapOf("down" to 65, "peelUp" to 60, "up" to 50, "peelDown" to 55)),
+                poses = bridgePoses(feet = feetOnWall, nearLegAngles = mapOf("down" to 78, "peelUp" to 78, "up" to 72, "peelDown" to 75), nearKneeBend = 44.0),
             ),
         ),
         sequence = bridgeSequence(
