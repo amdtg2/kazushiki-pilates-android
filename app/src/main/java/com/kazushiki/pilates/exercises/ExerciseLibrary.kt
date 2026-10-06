@@ -900,7 +900,7 @@ object ExerciseLibrary {
         variations = listOf(
             ExerciseVariation(
                 id = "standard", title = "Standard", level = ExerciseLevel.INTERMEDIATE,
-                poses = bridgePoses(feet = feetOnWall, nearLegAngles = mapOf("down" to 70, "peelUp" to 60, "up" to 50, "peelDown" to 55)),
+                poses = bridgePoses(feet = feetOnWall, nearLegAngles = mapOf("down" to 65, "peelUp" to 60, "up" to 50, "peelDown" to 55)),
             ),
         ),
         sequence = bridgeSequence(
