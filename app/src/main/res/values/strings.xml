@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kazushiki Pilates</string>
+    <string name="reminder_channel_name">Workout reminders</string>
+    <string name="reminder_channel_description">Reminders on your workout days</string>
+</resources>
