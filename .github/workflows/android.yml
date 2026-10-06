@@ -25,18 +25,41 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Run unit tests
-        run: ./gradlew --no-daemon testDebugUnitTest
-
       - name: Build test APK
-        run: ./gradlew --no-daemon assembleDebug
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --continue assembleDebug 2>&1 | tee build.log
 
-      - name: Upload test results
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --continue testDebugUnitTest 2>&1 | tee test.log
+
+      - name: Save a readable error report
         if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: app/build/reports/tests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Run ${{ github.run_number }} for ${{ github.sha }}"
+            echo "== Compiler errors =="
+            grep -hE "^e: |error:|What went wrong|Could not|> Task .*FAILED" build.log test.log 2>/dev/null | head -400 || true
+            echo "== Failed tests =="
+            grep -hE "FAILED|AssertionError|Exception" test.log 2>/dev/null | head -200 || true
+            for f in app/build/test-results/testDebugUnitTest/*.xml; do
+              [ -f "$f" ] && grep -A6 "<failure" "$f" | head -60
+            done
+            echo "== Tail of build log =="
+            tail -80 build.log 2>/dev/null || true
+          } > ci-report.txt
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git fetch origin ci-results || true
+          git switch --orphan ci-report-tmp
+          git rm -rf --cached . > /dev/null 2>&1 || true
+          git add ci-report.txt
+          git commit -m "CI report for ${{ github.sha }}"
+          git push -f origin HEAD:ci-results
 
       - name: Publish APK to the "latest" release
         env:
