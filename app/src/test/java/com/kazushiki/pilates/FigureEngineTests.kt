@@ -75,13 +75,16 @@ class FigureEngineTests {
         val minY = stage.minY - 4
         val maxX = stage.maxX + 4
         val maxY = stage.maxY + 4
-        for ((exercise, _, frame) in sampleFrames()) {
+        // Collect every exercise that leaves the stage so one run reports them all.
+        val outside = linkedMapOf<String, String>()
+        for ((exercise, variation, frame) in sampleFrames()) {
             val joints = FigureSolver.solve(frame.pose)
-            for (point in joints.all) {
+            for ((index, point) in joints.all.withIndex()) {
                 val inside = point.x >= minX && point.x < maxX && point.y >= minY && point.y < maxY
-                assertTrue("${exercise.name} leaves the stage at $point", inside)
+                if (!inside) outside.getOrPut("${exercise.name} / ${variation.id} / joint $index") { "$point" }
             }
         }
+        assertTrue("Leaves the stage: $outside", outside.isEmpty())
     }
 
     @Test
